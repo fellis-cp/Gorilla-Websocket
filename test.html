@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>WebSocket Client</title>
+</head>
+<body>
+    <h1>WebSocket Client</h1>
+    <h2>Room: <span id="roomName"></span></h2>
+    <div id="messages"></div>
+    <input type="text" id="messageInput" placeholder="Type a message...">
+    <button onclick="sendMessage()">Send</button>
+
+    <script>
+        const roomName = prompt("Enter room name:") || "default"; // Prompt the user to enter a room name or use "default" if empty
+        document.getElementById("roomName").textContent = roomName;
+
+        const webSocket = new WebSocket(`ws://localhost:8181/ws?room=${roomName}`);
+
+        webSocket.onopen = function(event) {
+            console.log("WebSocket connection established.");
+        };
+
+        webSocket.onerror = function(error) {
+            console.error("WebSocket error:", error);
+        };
+
+        webSocket.onmessage = function(event) {
+            const message = event.data;
+            const messagesDiv = document.getElementById("messages");
+            messagesDiv.innerHTML += "<p>" + message + "</p>";
+        };
+
+        function sendMessage() {
+            const messageInput = document.getElementById("messageInput");
+            const message = messageInput.value;
+            webSocket.send(message);
+            messageInput.value = "";
+        }
+    </script>
+</body>
+</html>
